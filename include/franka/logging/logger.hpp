@@ -46,7 +46,7 @@ auto logInfo(const std::string& message) -> void;
  */
 template <typename S, typename... Args>
 auto logInfo(const S& format_str, Args&&... args) -> void {
-  logInfo(fmt::format(format_str, std::forward<Args>(args)...));
+  logInfo(fmt::format(fmt::runtime(format_str), std::forward<Args>(args)...));
 }
 
 /**
@@ -64,7 +64,7 @@ auto logWarn(const std::string& message) -> void;
  */
 template <typename S, typename... Args>
 auto logWarn(const S& format_str, Args&&... args) -> void {
-  logWarn(fmt::format(format_str, std::forward<Args>(args)...));
+  logWarn(fmt::format(fmt::runtime(format_str), std::forward<Args>(args)...));
 }
 
 /**
@@ -82,7 +82,7 @@ auto logError(const std::string& message) -> void;
  */
 template <typename S, typename... Args>
 auto logError(const S& format_str, Args&&... args) -> void {
-  logError(fmt::format(format_str, std::forward<Args>(args)...));
+  logError(fmt::format(fmt::runtime(format_str), std::forward<Args>(args)...));
 }
 
 }  // namespace franka::logging
