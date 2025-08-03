@@ -130,15 +130,6 @@ bool ControlLoop<T>::spinControl(const RobotState& robot_state,
                                  franka::Duration time_step,
                                  research_interface::robot::ControllerCommand* command) {
   Torques control_output = control_callback_(robot_state, time_step);
-  if (cutoff_frequency_ < kMaxCutoffFrequency) {
-    for (size_t i = 0; i < 7; i++) {
-      control_output.tau_J[i] = lowpassFilter(kDeltaT, control_output.tau_J[i],
-                                              robot_state.tau_J_d[i], cutoff_frequency_);
-    }
-  }
-  if (limit_rate_) {
-    control_output.tau_J = limitRate(kMaxTorqueRate, control_output.tau_J, robot_state.tau_J_d);
-  }
   command->tau_J_d = control_output.tau_J;
   checkFinite(command->tau_J_d);
   return !control_output.motion_finished;
@@ -165,18 +156,6 @@ void ControlLoop<JointPositions>::convertMotion(
     initialized_filter_ = true;
   } else {
     previous_joint_position = robot_state.q_d;
-  }
-  if (cutoff_frequency_ < kMaxCutoffFrequency) {
-    for (size_t i = 0; i < 7; i++) {
-      command->q_c[i] =
-          lowpassFilter(kDeltaT, command->q_c[i], previous_joint_position[i], cutoff_frequency_);
-    }
-  }
-  if (limit_rate_) {
-    command->q_c = limitRate(computeUpperLimitsJointVelocity(robot_state.q_d),
-                             computeLowerLimitsJointVelocity(robot_state.q_d),
-                             kMaxJointAcceleration, kMaxJointJerk, command->q_c, robot_state.q_d,
-                             robot_state.dq_d, robot_state.ddq_d);
   }
   checkFinite(command->q_c);
 }
