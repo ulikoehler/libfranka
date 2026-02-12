@@ -3,6 +3,7 @@
 
 #include <fmt/format.h>
 #include <memory>
+#include <string_view>
 
 #include <franka/logging/logging_sink_interface.hpp>
 
@@ -38,6 +39,16 @@ auto removeAllLoggers() -> void;
 auto logInfo(const std::string& message) -> void;
 
 /**
+ * Logs an info message with a compile-time checked format string.
+ * This overload is preferred for string literals and enables fmt's compile-time
+ * format-string checking.
+ */
+template <typename... Args>
+auto logInfo(fmt::format_string<Args...> format_str, Args&&... args) -> void {
+  logInfo(fmt::format(format_str, std::forward<Args>(args)...));
+}
+
+/**
  * Logs an info message.
  * @tparam S The type of the format string.
  * @tparam Args The types of the arguments.
@@ -46,7 +57,7 @@ auto logInfo(const std::string& message) -> void;
  */
 template <typename S, typename... Args>
 auto logInfo(const S& format_str, Args&&... args) -> void {
-  logInfo(fmt::format(format_str, std::forward<Args>(args)...));
+  logInfo(fmt::format(fmt::runtime(std::string_view(format_str)), std::forward<Args>(args)...));
 }
 
 /**
@@ -54,6 +65,16 @@ auto logInfo(const S& format_str, Args&&... args) -> void {
  * @param message The message to log.
  */
 auto logWarn(const std::string& message) -> void;
+
+/**
+ * Logs a warning message with a compile-time checked format string.
+ * This overload is preferred for string literals and enables fmt's compile-time
+ * format-string checking.
+ */
+template <typename... Args>
+auto logWarn(fmt::format_string<Args...> format_str, Args&&... args) -> void {
+  logWarn(fmt::format(format_str, std::forward<Args>(args)...));
+}
 
 /**
  * Logs a warning message.
@@ -64,7 +85,7 @@ auto logWarn(const std::string& message) -> void;
  */
 template <typename S, typename... Args>
 auto logWarn(const S& format_str, Args&&... args) -> void {
-  logWarn(fmt::format(format_str, std::forward<Args>(args)...));
+  logWarn(fmt::format(fmt::runtime(std::string_view(format_str)), std::forward<Args>(args)...));
 }
 
 /**
@@ -72,6 +93,16 @@ auto logWarn(const S& format_str, Args&&... args) -> void {
  * @param message The message to log.
  */
 auto logError(const std::string& message) -> void;
+
+/**
+ * Logs an error message with a compile-time checked format string.
+ * This overload is preferred for string literals and enables fmt's compile-time
+ * format-string checking.
+ */
+template <typename... Args>
+auto logError(fmt::format_string<Args...> format_str, Args&&... args) -> void {
+  logError(fmt::format(format_str, std::forward<Args>(args)...));
+}
 
 /**
  * Logs an error message.
@@ -82,7 +113,7 @@ auto logError(const std::string& message) -> void;
  */
 template <typename S, typename... Args>
 auto logError(const S& format_str, Args&&... args) -> void {
-  logError(fmt::format(format_str, std::forward<Args>(args)...));
+  logError(fmt::format(fmt::runtime(std::string_view(format_str)), std::forward<Args>(args)...));
 }
 
 }  // namespace franka::logging
